@@ -52,7 +52,7 @@ jobs:
         env:
           GITHUB_PAGES: "true"
 
-      # Push dist/ to gh-pages — no upload-artifact / storage quota required
+      # Push dist/ to gh-pages — commits authored as Roberto de Souza only
       - name: Deploy to GitHub Pages (gh-pages branch)
         uses: peaceiris/actions-gh-pages@v4
         with:
@@ -60,6 +60,8 @@ jobs:
           publish_dir: landing-page/dist
           publish_branch: gh-pages
           force_orphan: true
+          user_name: Roberto de Souza
+          user_email: rabbittrix@hotmail.com
           commit_message: "deploy: landing page ${{ github.sha }}"
 
       - name: Configure GitHub Pages source (gh-pages / root)
