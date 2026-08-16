@@ -1,5 +1,5 @@
 # Deploy RAVEN AI landing page → GitHub Pages (RAVEN-AI-UI repo)
-# Uses direct gh-pages push (no Actions artifact storage — avoids quota limits)
+# Pipeline: authorize → build → deploy
 # Author: Roberto de Souza — exclusive push rights for production
 
 name: Deploy Landing Page
@@ -24,11 +24,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  authorize:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: landing-page
     steps:
       - name: Verify exclusive author (rabbittrix only)
         if: github.actor != 'rabbittrix'
@@ -36,6 +33,13 @@ jobs:
           echo "::error::Only Roberto de Souza (GitHub: rabbittrix) may deploy the production landing page."
           exit 1
 
+  build:
+    needs: authorize
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: landing-page
+    steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
@@ -52,12 +56,29 @@ jobs:
         env:
           GITHUB_PAGES: "true"
 
-      # Push dist/ to gh-pages — commits authored as Roberto de Souza only
+      - name: Upload build output
+        uses: actions/upload-artifact@v4
+        with:
+          name: landing-dist
+          if-no-files-found: error
+          path: landing-page/dist
+          retention-days: 1
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build output
+        uses: actions/download-artifact@v4
+        with:
+          name: landing-dist
+          path: dist
+
       - name: Deploy to GitHub Pages (gh-pages branch)
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.RAVEN_SYNC_TOKEN || secrets.GITHUB_TOKEN }}
-          publish_dir: landing-page/dist
+          publish_dir: dist
           publish_branch: gh-pages
           force_orphan: true
           user_name: Roberto de Souza
