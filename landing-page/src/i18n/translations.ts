@@ -23,6 +23,15 @@ export type Translation = {
   winLabel: string;
   linuxLabel: string;
   trialNote: string;
+  downloadLoading: string;
+  downloadError: string;
+  downloadEmpty: string;
+  downloadEmptyHint: string;
+  downloadPickVersion: string;
+  downloadAction: string;
+  winExe: string;
+  winMsi: string;
+  linuxDeb: string;
   footerTotal: string;
   footerWin: string;
   footerLinux: string;
@@ -43,7 +52,7 @@ export const translations: Record<Locale, Translation> = {
       "While others sell cloud-dependent promises, RAVEN delivers a sovereign, deterministic execution kernel that runs locally on your machine.",
     heroBody2:
       "While others use cloud-wrappers, RAVEN runs locally with O(n) linear efficiency. Zero-hallucination via Rust-compiled legal kernels.",
-    cta: "Download for Windows / Linux",
+    cta: "View versions & download",
     ctaTrial: "Download the 3-day Trial. Experience the future of Sovereign AI.",
     pillarsTitle: "The Triple-Pillar Architecture",
     pillar1Title: "Mamba + Transformer",
@@ -63,6 +72,16 @@ export const translations: Record<Locale, Translation> = {
     winLabel: "Windows (.exe / .msi)",
     linuxLabel: "Ubuntu (.deb)",
     trialNote: "Enterprise MSI and DEB packages built on every release.",
+    downloadLoading: "Loading published versions…",
+    downloadError: "Could not load releases",
+    downloadEmpty: "No installers published yet.",
+    downloadEmptyHint:
+      "Versioned builds (raven-ai-vX.Y.Z-setup.exe, .msi, _amd64.deb) appear here after the first GitHub Release.",
+    downloadPickVersion: "Select a version — click to download",
+    downloadAction: "Download",
+    winExe: "Windows setup",
+    winMsi: "Enterprise MSI",
+    linuxDeb: "Ubuntu .deb",
     footerTotal: "Total Downloads",
     footerWin: "Win",
     footerLinux: "Ubuntu",
@@ -81,7 +100,7 @@ export const translations: Record<Locale, Translation> = {
       "Während andere cloudabhängige Versprechen verkaufen, liefert RAVEN einen souveränen, deterministischen Ausführungskernel — lokal auf Ihrer Maschine.",
     heroBody2:
       "Souveräne Intelligenz. Die erste in Rust entwickelte Hybrid-KI-Engine für geschäftskritische Finanzen und Recht.",
-    cta: "Download für Windows / Linux",
+    cta: "Versionen anzeigen & laden",
     ctaTrial:
       "3-Tage-Testversion laden. Erleben Sie die Zukunft souveräner KI.",
     pillarsTitle: "Die Drei-Säulen-Architektur",
@@ -102,6 +121,16 @@ export const translations: Record<Locale, Translation> = {
     winLabel: "Windows (.exe / .msi)",
     linuxLabel: "Ubuntu (.deb)",
     trialNote: "Enterprise-MSI und DEB bei jedem Release.",
+    downloadLoading: "Veröffentlichte Versionen werden geladen…",
+    downloadError: "Releases konnten nicht geladen werden",
+    downloadEmpty: "Noch keine Installer veröffentlicht.",
+    downloadEmptyHint:
+      "Versionierte Builds (raven-ai-vX.Y.Z-setup.exe, .msi, _amd64.deb) erscheinen nach dem ersten GitHub Release.",
+    downloadPickVersion: "Version wählen — zum Download klicken",
+    downloadAction: "Download",
+    winExe: "Windows Setup",
+    winMsi: "Enterprise MSI",
+    linuxDeb: "Ubuntu .deb",
     footerTotal: "Downloads gesamt",
     footerWin: "Win",
     footerLinux: "Ubuntu",
@@ -120,7 +149,7 @@ export const translations: Record<Locale, Translation> = {
       "Enquanto outros vendem promessas dependentes da nuvem, o RAVEN entrega um kernel de execução soberano e determinístico — local na sua máquina.",
     heroBody2:
       "Inteligência Soberana. Chega de promessas em nuvem. Execute o RAVEN localmente com segurança determinística e latência zero.",
-    cta: "Baixar para Windows / Linux",
+    cta: "Ver versões e baixar",
     ctaTrial:
       "Baixe o trial de 3 dias. Experimente o futuro da IA Soberana.",
     pillarsTitle: "Arquitetura de Três Pilares",
@@ -141,6 +170,16 @@ export const translations: Record<Locale, Translation> = {
     winLabel: "Windows (.exe / .msi)",
     linuxLabel: "Ubuntu (.deb)",
     trialNote: "MSI enterprise e DEB em cada release.",
+    downloadLoading: "Carregando versões publicadas…",
+    downloadError: "Não foi possível carregar releases",
+    downloadEmpty: "Nenhum instalador publicado ainda.",
+    downloadEmptyHint:
+      "Builds versionados (raven-ai-vX.Y.Z-setup.exe, .msi, _amd64.deb) aparecem após o primeiro GitHub Release.",
+    downloadPickVersion: "Selecione uma versão — clique para baixar",
+    downloadAction: "Baixar",
+    winExe: "Setup Windows",
+    winMsi: "MSI Enterprise",
+    linuxDeb: "Ubuntu .deb",
     footerTotal: "Downloads totais",
     footerWin: "Win",
     footerLinux: "Ubuntu",

@@ -12,20 +12,44 @@ Premium marketing site for [RAVEN-AI-UI](https://github.com/rabbittrix/RAVEN-AI-
 
 ## Local development
 
-```bash
-cd landing-page
-npm install
-npm run dev
+**Run from repo root** (`H:\Raven-ai`), not from `landing-page/`:
+
+```powershell
+# Landing page only
+npm run landing:install
+npm run landing:build
+npm run landing:dev
+
+# Or use the helper script
+npm run build:landing
 ```
 
-Open `http://localhost:5173`
-
-## Production build
-
-```bash
-npm run build
-GITHUB_PAGES=true npm run build   # base path /RAVEN-AI-UI/ for GitHub Pages
+```powershell
+# Windows desktop installers (.exe + .msi) — repo root only
+npm run build:win
+# or: npm run tauri:build:win
 ```
+
+```powershell
+# Ubuntu .deb — Linux/WSL or GitHub Actions CI
+npm run tauri:build:linux
+```
+
+> PowerShell does not support `&&`. Use `;` or run commands separately:
+> `npm ci; npm run build`
+
+## Deployment pipeline (RAVEN-AI → RAVEN-AI-UI)
+
+```text
+RAVEN-AI push/release
+  → Build installers (.exe, .msi, .deb) → GitHub Release (RAVEN-AI)
+  → deploy-to-ui.yml (RAVEN_SYNC_TOKEN)
+  → Sync landing-page/ → RAVEN-AI-UI main
+  → deploy-landing.yml → gh-pages (live site + download links)
+```
+
+Installers live on [RAVEN-AI Releases](https://github.com/rabbittrix/RAVEN-AI/releases).  
+The landing page fetches download counts/links via GitHub API.
 
 ## Languages
 
@@ -37,16 +61,22 @@ GITHUB_PAGES=true npm run build   # base path /RAVEN-AI-UI/ for GitHub Pages
 
 CI lives in `.github/workflows/deploy-landing.yml`. Only GitHub user **`rabbittrix`** may deploy.
 
-**GitHub Pages setup (one-time):**
+**Required secrets (Settings → Secrets → Actions):**
 
-1. Repo **Settings → Pages**
-2. **Build and deployment → Source:** Deploy from a branch
-3. **Branch:** `gh-pages` / `/ (root)`
-4. Save
+| Repo | Secret | Purpose |
+| --- | --- | --- |
+| **RAVEN-AI-UI** | `RAVEN_SYNC_TOKEN` | Push `gh-pages` + configure Pages API |
+| **RAVEN-AI** | `RAVEN_SYNC_TOKEN` | Mirror `landing-page/` to UI repo (optional; skips if unset) |
 
-The workflow pushes built files directly to `gh-pages` (no Actions artifact storage).
+PAT scopes: `repo`, `workflow`. Author on all CI commits: **Roberto de Souza** only.
+
+**GitHub Pages setup (automatic):** the workflow sets **Branch:** `gh-pages` / **/(root)** after each deploy.
+
+Manual fallback: [Settings → Pages](https://github.com/rabbittrix/RAVEN-AI-UI/settings/pages)
 
 Download artifacts are fetched from: `https://github.com/rabbittrix/RAVEN-AI/releases`
+
+**Monorepo sync:** pushes to `landing-page/` in [RAVEN-AI](https://github.com/rabbittrix/RAVEN-AI) trigger `sync-landing-ui.yml` (uses the same `RAVEN_SYNC_TOKEN` secret on that repo).
 
 ## Note
 

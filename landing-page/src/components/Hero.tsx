@@ -1,12 +1,8 @@
 import { motion } from "framer-motion";
 import { useI18n } from "@/i18n/I18nProvider";
-import { RELEASES_PAGE, useGitHubReleases } from "@/hooks/useGitHubReleases";
 
 export function Hero() {
   const { t } = useI18n();
-  const releases = useGitHubReleases();
-
-  const primaryUrl = releases.winUrl ?? RELEASES_PAGE;
 
   return (
     <section className="relative px-6 pb-20 pt-16 md:pt-24">
@@ -83,23 +79,11 @@ export function Hero() {
           className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row"
         >
           <a
-            href={primaryUrl}
-            target="_blank"
-            rel="noreferrer"
+            href="#download"
             className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-neon-dim to-neon px-8 py-3.5 font-display text-xs uppercase tracking-[0.2em] text-white shadow-neon transition hover:scale-[1.02] hover:brightness-110"
           >
             {t.cta}
           </a>
-          {releases.linuxUrl ? (
-            <a
-              href={releases.linuxUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="glass inline-flex items-center gap-2 rounded-full px-6 py-3.5 font-display text-xs uppercase tracking-[0.18em] text-[color:var(--raven-text)] transition hover:border-neon"
-            >
-              Ubuntu .deb
-            </a>
-          ) : null}
         </motion.div>
 
         <motion.p

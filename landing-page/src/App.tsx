@@ -1,6 +1,6 @@
 import { Hero } from "@/components/Hero";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { DownloadSection } from "@/components/DownloadSection";
+import { ReleaseDownloadPanel } from "@/components/ReleaseDownloadPanel";
 import { Jurisdictions } from "@/components/Jurisdictions";
 import { Pillars } from "@/components/Pillars";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -44,7 +44,7 @@ export function App() {
         <Hero />
         <Pillars />
         <Jurisdictions />
-        <DownloadSection />
+        <ReleaseDownloadPanel />
       </main>
 
       <TrustFooter />
