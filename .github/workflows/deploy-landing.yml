@@ -1,6 +1,5 @@
-# Deploy RAVEN AI landing page → GitHub Pages (RAVEN-AI-UI repo)
-# Manual fallback only — primary deploy runs from RAVEN-AI (deploy-to-ui.yml).
-# Requires RAVEN_SYNC_TOKEN on this repo if run manually.
+# Deploy RAVEN AI landing page → GitHub Pages (manual fallback on RAVEN-AI-UI)
+# No Actions artifacts — avoids storage quota limits
 
 name: Deploy Landing Page
 
@@ -35,25 +34,17 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "24"
           cache: npm
           cache-dependency-path: landing-page/package-lock.json
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Build static site
+      - name: Build static site (validate)
         run: npm run build
         env:
           GITHUB_PAGES: "true"
-
-      - name: Upload build output
-        uses: actions/upload-artifact@v4
-        with:
-          name: landing-dist
-          if-no-files-found: error
-          path: landing-page/dist
-          retention-days: 1
 
   deploy:
     needs: build
@@ -61,22 +52,30 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: landing-page/package-lock.json
+
       - name: Verify Roberto de Souza push token
         env:
           RAVEN_SYNC_TOKEN: ${{ secrets.RAVEN_SYNC_TOKEN }}
         run: bash .github/scripts/verify-raven-sync-token.sh
 
-      - name: Download build output
-        uses: actions/download-artifact@v4
-        with:
-          name: landing-dist
-          path: dist
+      - name: Build static site for deploy
+        working-directory: landing-page
+        run: |
+          npm ci
+          npm run build
+        env:
+          GITHUB_PAGES: "true"
 
       - name: Deploy to GitHub Pages (gh-pages branch)
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.RAVEN_SYNC_TOKEN }}
-          publish_dir: dist
+          publish_dir: landing-page/dist
           publish_branch: gh-pages
           force_orphan: true
           user_name: Roberto de Souza
