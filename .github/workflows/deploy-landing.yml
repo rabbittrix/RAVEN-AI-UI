@@ -56,8 +56,26 @@ jobs:
       - name: Deploy to GitHub Pages (gh-pages branch)
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.RAVEN_SYNC_TOKEN || secrets.GITHUB_TOKEN }}
           publish_dir: landing-page/dist
           publish_branch: gh-pages
           force_orphan: true
           commit_message: "deploy: landing page ${{ github.sha }}"
+
+      - name: Configure GitHub Pages source (gh-pages / root)
+        env:
+          GH_TOKEN: ${{ secrets.RAVEN_SYNC_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          configure() {
+            gh api "repos/${{ github.repository }}/pages" \
+              -X PUT \
+              -f build_type=legacy \
+              -f "source[branch]=gh-pages" \
+              -f "source[path]=/"
+          }
+          configure || gh api "repos/${{ github.repository }}/pages" \
+            -X POST \
+            -f "source[branch]=gh-pages" \
+            -f "source[path]=/"
+          echo "GitHub Pages configured: gh-pages @ /"
