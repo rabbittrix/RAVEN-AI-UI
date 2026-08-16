@@ -6,7 +6,7 @@ import {
 } from "@/hooks/useGitHubReleases";
 import { useI18n } from "@/i18n/I18nProvider";
 
-function DirectDownloadLink({
+function DownloadButton({
   href,
   label,
   primary = false,
@@ -19,12 +19,10 @@ function DirectDownloadLink({
     <a
       href={href}
       download
-      target="_blank"
-      rel="noopener noreferrer"
       className={
         primary
-          ? "rounded-xl bg-gradient-to-r from-neon-dim to-neon px-6 py-3 font-display text-xs uppercase tracking-[0.18em] text-white shadow-neon transition hover:brightness-110"
-          : "glass rounded-xl px-6 py-3 font-display text-xs uppercase tracking-[0.18em] transition hover:border-neon"
+          ? "inline-flex min-w-[12rem] items-center justify-center rounded-xl bg-gradient-to-r from-neon-dim to-neon px-6 py-3.5 font-display text-xs uppercase tracking-[0.18em] text-white shadow-neon transition hover:scale-[1.01] hover:brightness-110"
+          : "glass inline-flex min-w-[12rem] items-center justify-center rounded-xl px-6 py-3.5 font-display text-xs uppercase tracking-[0.18em] text-[color:var(--raven-text)] transition hover:border-neon hover:text-neon"
       }
     >
       {label}
@@ -32,41 +30,26 @@ function DirectDownloadLink({
   );
 }
 
-function DisabledDownloadButton({ label }: { label: string }) {
-  return (
-    <button
-      type="button"
-      disabled
-      title="Installer not published yet"
-      className="cursor-not-allowed rounded-xl border border-[color:var(--raven-line)] px-6 py-3 font-display text-xs uppercase tracking-[0.18em] text-[color:var(--raven-muted)] opacity-60"
-    >
-      {label}
-    </button>
-  );
-}
-
 function VersionRow({ release }: { release: ReleaseVersion }) {
   const { t } = useI18n();
 
   return (
-    <div className="rounded-xl border border-[color:var(--raven-line)] bg-[color:var(--raven-bg)]/40 p-4 text-left">
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h3 className="font-display text-sm font-bold tracking-wide">
+    <div className="rounded-xl border border-[color:var(--raven-line)] bg-[color:var(--raven-bg)]/30 p-5 text-left">
+      <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-[color:var(--raven-line)] pb-3">
+        <h3 className="font-display text-base font-bold tracking-wide">
           v{release.version}
         </h3>
         <span className="font-mono text-[10px] text-[color:var(--raven-muted)]">
           {release.publishedLabel}
         </span>
       </div>
-      <ul className="mt-3 space-y-2">
+      <ul className="mt-3 divide-y divide-[color:var(--raven-line)]">
         {release.assets.map((asset) => (
           <li key={asset.url}>
             <a
               href={asset.url}
               download={asset.name}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex flex-wrap items-center justify-between gap-2 rounded-lg border border-transparent px-3 py-2 transition hover:border-neon/40 hover:bg-neon/5"
+              className="group flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between"
             >
               <span className="font-mono text-[11px] text-[color:var(--raven-text)] group-hover:text-neon">
                 {asset.name}
@@ -74,7 +57,7 @@ function VersionRow({ release }: { release: ReleaseVersion }) {
               <span className="flex items-center gap-3 font-sans text-[10px] text-[color:var(--raven-muted)]">
                 <span>{platformLabel(asset.platform, t)}</span>
                 <span>{asset.sizeLabel}</span>
-                <span className="rounded bg-neon/10 px-2 py-0.5 font-display uppercase tracking-wider text-neon">
+                <span className="rounded-full bg-neon/10 px-2.5 py-1 font-display uppercase tracking-wider text-neon">
                   {t.downloadAction}
                 </span>
               </span>
@@ -89,9 +72,8 @@ function VersionRow({ release }: { release: ReleaseVersion }) {
 export function ReleaseDownloadPanel() {
   const { t } = useI18n();
   const releases = useGitHubReleases();
-
-  const hasWin = Boolean(releases.winUrl);
-  const hasLinux = Boolean(releases.linuxUrl);
+  const latest = releases.releases[0];
+  const hasInstallers = releases.releases.length > 0;
 
   return (
     <section id="download" className="px-6 py-16">
@@ -104,68 +86,61 @@ export function ReleaseDownloadPanel() {
             {t.downloadSub}
           </p>
 
-          {!releases.loading && !releases.error ? (
-            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              {hasWin ? (
-                <DirectDownloadLink
-                  href={releases.winUrl!}
-                  label={t.winLabel}
-                  primary
-                />
+          {releases.loading ? (
+            <p className="mt-10 font-mono text-xs text-[color:var(--raven-muted)]">
+              {t.downloadLoading}
+            </p>
+          ) : hasInstallers && latest ? (
+            <>
+              <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                {releases.winUrl ? (
+                  <DownloadButton
+                    href={releases.winUrl}
+                    label={t.winLabel}
+                    primary
+                  />
+                ) : null}
+                {releases.linuxUrl ? (
+                  <DownloadButton href={releases.linuxUrl} label={t.linuxLabel} />
+                ) : null}
+              </div>
+              {releases.msiUrl ? (
+                <a
+                  href={releases.msiUrl}
+                  download
+                  className="mt-4 inline-block font-mono text-[11px] text-neon underline underline-offset-4 hover:brightness-110"
+                >
+                  {t.winMsi} (v{latest.version}) →
+                </a>
+              ) : null}
+
+              {releases.releases.length > 1 ? (
+                <div className="mt-10 space-y-4 text-left">
+                  <p className="text-center font-mono text-[10px] uppercase tracking-wider text-neon">
+                    {t.downloadPickVersion}
+                  </p>
+                  {releases.releases.map((rel) => (
+                    <VersionRow key={rel.tag} release={rel} />
+                  ))}
+                </div>
               ) : (
-                <DisabledDownloadButton label={t.winLabel} />
+                <div className="mt-8 text-left">
+                  <VersionRow release={latest} />
+                </div>
               )}
-              {hasLinux ? (
-                <DirectDownloadLink href={releases.linuxUrl!} label={t.linuxLabel} />
-              ) : (
-                <DisabledDownloadButton label={t.linuxLabel} />
-              )}
+            </>
+          ) : (
+            <div className="mt-8 rounded-2xl border border-dashed border-[color:var(--raven-line)] bg-[color:var(--raven-bg)]/20 px-6 py-10">
+              <p className="font-sans text-sm text-[color:var(--raven-muted)]">
+                {t.downloadEmpty}
+              </p>
+              <p className="mt-3 font-mono text-[10px] leading-relaxed text-[color:var(--raven-muted)]">
+                {t.downloadEmptyHint}
+              </p>
             </div>
-          ) : null}
+          )}
 
-          {releases.msiUrl ? (
-            <a
-              href={releases.msiUrl}
-              download
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-4 inline-block font-mono text-[11px] text-neon underline underline-offset-4"
-            >
-              {t.winMsi} (v{releases.latestVersion}) →
-            </a>
-          ) : null}
-
-          <div className="mt-8 text-left">
-            {releases.loading ? (
-              <p className="text-center font-mono text-xs text-[color:var(--raven-muted)]">
-                {t.downloadLoading}
-              </p>
-            ) : releases.error ? (
-              <p className="text-center font-mono text-xs text-red-400">
-                {t.downloadError}: {releases.error}
-              </p>
-            ) : releases.releases.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-[color:var(--raven-line)] px-4 py-8 text-center">
-                <p className="font-sans text-sm text-[color:var(--raven-muted)]">
-                  {t.downloadEmpty}
-                </p>
-                <p className="mt-2 font-mono text-[10px] text-[color:var(--raven-muted)]">
-                  {t.downloadEmptyHint}
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <p className="text-center font-mono text-[10px] uppercase tracking-wider text-neon">
-                  {t.downloadPickVersion}
-                </p>
-                {releases.releases.map((rel) => (
-                  <VersionRow key={rel.tag} release={rel} />
-                ))}
-              </div>
-            )}
-          </div>
-
-          <p className="mt-6 font-sans text-[11px] text-[color:var(--raven-muted)]">
+          <p className="mt-8 font-sans text-[11px] text-[color:var(--raven-muted)]">
             {t.trialNote}
           </p>
         </GlassCard>

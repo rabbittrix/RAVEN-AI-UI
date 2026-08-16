@@ -1,0 +1,28 @@
+{
+  "generatedAt": "2026-08-16T19:01:40.647Z",
+  "source": "release-folder",
+  "releases": [
+    {
+      "tag": "v1.0.0",
+      "version": "1.0.0",
+      "publishedAt": "2026-08-16T19:01:40.554Z",
+      "publishedLabel": "Aug 16, 2026",
+      "assets": [
+        {
+          "name": "raven-ai-v1.0.0-setup.exe",
+          "url": "/RAVEN-AI-UI/release/v1.0.0/raven-ai-v1.0.0-setup.exe",
+          "downloadCount": 0,
+          "platform": "windows-exe",
+          "sizeLabel": "12.7 MB"
+        },
+        {
+          "name": "raven-ai-v1.0.0.msi",
+          "url": "/RAVEN-AI-UI/release/v1.0.0/raven-ai-v1.0.0.msi",
+          "downloadCount": 0,
+          "platform": "windows-msi",
+          "sizeLabel": "18.2 MB"
+        }
+      ]
+    }
+  ]
+}

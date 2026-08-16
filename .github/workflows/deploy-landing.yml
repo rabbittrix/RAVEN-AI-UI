@@ -70,6 +70,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: bash .github/scripts/resolve-github-token.sh prefer-roberto
 
+      - name: Generate releases manifest from /release folder
+        run: node scripts/generate-releases-json.mjs /RAVEN-AI-UI/
+
       - name: Build static site for deploy
         working-directory: landing-page
         run: |

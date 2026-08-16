@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+const MANIFEST_URL = `${import.meta.env.BASE_URL}releases.json`;
 const RELEASES_API =
   "https://api.github.com/repos/rabbittrix/RAVEN-AI/releases?per_page=100";
 
@@ -46,6 +47,12 @@ type GhRelease = {
   tag_name: string;
   published_at: string;
   assets: GhAsset[];
+};
+
+type ManifestRelease = ReleaseVersion;
+
+type ReleasesManifest = {
+  releases?: ManifestRelease[];
 };
 
 function formatBytes(bytes: number): string {
@@ -102,15 +109,57 @@ function mapAssets(raw: GhAsset[]): ReleaseAsset[] {
   return mapped;
 }
 
-function parseReleases(releases: GhRelease[]): Omit<ReleaseStats, "loading" | "error"> {
+function resolveAssetUrl(url: string): string {
+  if (/^https?:\/\//i.test(url)) return url;
+  const base = import.meta.env.BASE_URL || "/";
+  return `${base}${url.replace(/^\//, "")}`;
+}
+
+function normalizeVersions(versions: ReleaseVersion[]): ReleaseVersion[] {
+  return versions.map((rel) => ({
+    ...rel,
+    assets: rel.assets.map((a) => ({ ...a, url: resolveAssetUrl(a.url) })),
+  }));
+}
+
+function statsFromVersions(versions: ReleaseVersion[]): Omit<ReleaseStats, "loading" | "error"> {
+  const normalized = normalizeVersions(versions);
   let totalDownloads = 0;
+  for (const rel of normalized) {
+    for (const asset of rel.assets) {
+      totalDownloads += asset.downloadCount;
+    }
+  }
+
+  const latest = normalized[0];
+  const latestAssets = latest?.assets ?? [];
+  const winAssets = latestAssets.filter(
+    (a) => a.platform === "windows-exe" || a.platform === "windows-msi",
+  );
+  const linuxAssets = latestAssets.filter((a) => a.platform === "linux-deb");
+
+  const exe = latestAssets.find((a) => a.platform === "windows-exe");
+  const msi = latestAssets.find((a) => a.platform === "windows-msi");
+  const deb = latestAssets.find((a) => a.platform === "linux-deb");
+
+  return {
+    releases: normalized,
+    totalDownloads,
+    latestVersion: latest?.version ?? "—",
+    winCount: winAssets.reduce((s, a) => s + a.downloadCount, 0),
+    linuxCount: linuxAssets.reduce((s, a) => s + a.downloadCount, 0),
+    lastReleaseDate: latest?.publishedLabel ?? "—",
+    winUrl: exe?.url ?? msi?.url ?? null,
+    msiUrl: msi?.url ?? null,
+    linuxUrl: deb?.url ?? null,
+  };
+}
+
+function parseGhReleases(releases: GhRelease[]): Omit<ReleaseStats, "loading" | "error"> {
   const versions: ReleaseVersion[] = [];
 
   for (const rel of releases) {
     const assets = mapAssets(rel.assets ?? []);
-    for (const asset of assets) {
-      totalDownloads += asset.downloadCount;
-    }
     if (assets.length === 0) continue;
 
     versions.push({
@@ -126,28 +175,15 @@ function parseReleases(releases: GhRelease[]): Omit<ReleaseStats, "loading" | "e
     });
   }
 
-  const latest = versions[0];
-  const latestAssets = latest?.assets ?? [];
-  const winAssets = latestAssets.filter(
-    (a) => a.platform === "windows-exe" || a.platform === "windows-msi",
-  );
-  const linuxAssets = latestAssets.filter((a) => a.platform === "linux-deb");
+  return statsFromVersions(versions);
+}
 
-  const exe = latestAssets.find((a) => a.platform === "windows-exe");
-  const msi = latestAssets.find((a) => a.platform === "windows-msi");
-  const deb = latestAssets.find((a) => a.platform === "linux-deb");
-
-  return {
-    releases: versions,
-    totalDownloads,
-    latestVersion: latest?.version ?? "—",
-    winCount: winAssets.reduce((s, a) => s + a.downloadCount, 0),
-    linuxCount: linuxAssets.reduce((s, a) => s + a.downloadCount, 0),
-    lastReleaseDate: latest?.publishedLabel ?? "—",
-    winUrl: exe?.url ?? msi?.url ?? null,
-    msiUrl: msi?.url ?? null,
-    linuxUrl: deb?.url ?? null,
-  };
+function parseManifest(manifest: ReleasesManifest): Omit<ReleaseStats, "loading" | "error"> {
+  const versions = (manifest.releases ?? []).map((rel) => ({
+    ...rel,
+    assets: [...rel.assets].sort((a, b) => assetSortKey(a.platform) - assetSortKey(b.platform)),
+  }));
+  return statsFromVersions(versions);
 }
 
 const EMPTY: ReleaseStats = {
@@ -164,6 +200,33 @@ const EMPTY: ReleaseStats = {
   error: null,
 };
 
+async function loadManifest(): Promise<Omit<ReleaseStats, "loading" | "error"> | null> {
+  const res = await fetch(`${MANIFEST_URL}?t=${Date.now()}`, {
+    headers: { Accept: "application/json" },
+  });
+  if (!res.ok) return null;
+  const data = (await res.json()) as ReleasesManifest;
+  if (!data || !Array.isArray(data.releases)) return null;
+  return parseManifest(data);
+}
+
+async function loadFromGitHubApi(): Promise<Omit<ReleaseStats, "loading" | "error"> | null> {
+  const res = await fetch(RELEASES_API, {
+    headers: { Accept: "application/vnd.github+json" },
+  });
+  if (res.status === 404) {
+    return parseGhReleases([]);
+  }
+  if (!res.ok) {
+    return null;
+  }
+  const data = (await res.json()) as GhRelease[];
+  if (!Array.isArray(data)) {
+    return null;
+  }
+  return parseGhReleases(data);
+}
+
 export function useGitHubReleases(): ReleaseStats {
   const [stats, setStats] = useState<ReleaseStats>(EMPTY);
 
@@ -172,24 +235,31 @@ export function useGitHubReleases(): ReleaseStats {
 
     async function load() {
       try {
-        const res = await fetch(RELEASES_API, {
-          headers: { Accept: "application/vnd.github+json" },
-        });
-        if (!res.ok) {
-          throw new Error(`GitHub API ${res.status}`);
-        }
-        const data = (await res.json()) as GhRelease[];
-        if (!Array.isArray(data)) {
-          throw new Error("Invalid releases payload");
-        }
+        const manifest = await loadManifest();
         if (!alive) return;
-        setStats({ ...parseReleases(data), loading: false, error: null });
-      } catch (err) {
+        if (manifest) {
+          setStats({ ...manifest, loading: false, error: null });
+          return;
+        }
+
+        const api = await loadFromGitHubApi();
+        if (!alive) return;
+        if (api) {
+          setStats({ ...api, loading: false, error: null });
+          return;
+        }
+
+        setStats({
+          ...parseGhReleases([]),
+          loading: false,
+          error: null,
+        });
+      } catch {
         if (!alive) return;
         setStats({
-          ...EMPTY,
+          ...parseGhReleases([]),
           loading: false,
-          error: err instanceof Error ? err.message : "Failed to load",
+          error: null,
         });
       }
     }
@@ -203,11 +273,14 @@ export function useGitHubReleases(): ReleaseStats {
   return stats;
 }
 
-export function platformLabel(platform: PlatformKind, t: {
-  winExe: string;
-  winMsi: string;
-  linuxDeb: string;
-}): string {
+export function platformLabel(
+  platform: PlatformKind,
+  t: {
+    winExe: string;
+    winMsi: string;
+    linuxDeb: string;
+  },
+): string {
   switch (platform) {
     case "windows-exe":
       return t.winExe;

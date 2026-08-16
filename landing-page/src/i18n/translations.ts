@@ -76,7 +76,7 @@ export const translations: Record<Locale, Translation> = {
     downloadError: "Could not load releases",
     downloadEmpty: "No installers published yet.",
     downloadEmptyHint:
-      "Versioned builds (raven-ai-vX.Y.Z-setup.exe, .msi, _amd64.deb) appear here after the first GitHub Release.",
+      "Installers are served from /release/vX.Y.Z/ on this site after publish.",
     downloadPickVersion: "Select a version — click to download",
     downloadAction: "Download",
     winExe: "Windows setup",
