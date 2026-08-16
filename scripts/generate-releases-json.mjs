@@ -83,6 +83,15 @@ function assetSortKey(platform) {
   }
 }
 
+function expectedInstallerNames(tag) {
+  const t = tag.startsWith("v") ? tag : `v${tag}`;
+  return [
+    `raven-ai-${t}-setup.exe`,
+    `raven-ai-${t}.msi`,
+    `raven-ai-${t}_amd64.deb`,
+  ];
+}
+
 function buildAssetsForTag(tag, ghAssets, downloadStats) {
   const byName = new Map();
 
@@ -106,6 +115,22 @@ function buildAssetsForTag(tag, ghAssets, downloadStats) {
   if (fs.existsSync(dir) && fs.statSync(dir).isDirectory()) {
     for (const name of fs.readdirSync(dir).sort()) {
       if (byName.has(name)) continue;
+      const platform = classify(name);
+      if (!platform) continue;
+      const local = localAsset(tag, name);
+      if (!local) continue;
+      byName.set(name, {
+        name,
+        url: local.url,
+        downloadCount: downloadStats[name] ?? 0,
+        platform,
+        sizeLabel: local.sizeLabel,
+      });
+    }
+  }
+
+  if (byName.size === 0) {
+    for (const name of expectedInstallerNames(tag)) {
       const platform = classify(name);
       if (!platform) continue;
       const local = localAsset(tag, name);
@@ -174,7 +199,26 @@ function mergeReleases(folderReleases, apiReleases, downloadStats) {
   for (const gh of apiReleases) {
     const tag = gh.tag_name;
     if (!tag) continue;
-    const assets = buildAssetsForTag(tag, gh.assets ?? [], downloadStats);
+    let assets = buildAssetsForTag(tag, gh.assets ?? [], downloadStats);
+
+    if (!assets.length) {
+      assets = expectedInstallerNames(tag)
+        .map((name) => {
+          const platform = classify(name);
+          if (!platform) return null;
+          const local = localAsset(tag, name);
+          if (!local) return null;
+          return {
+            name,
+            url: local.url,
+            downloadCount: downloadStats[name] ?? 0,
+            platform,
+            sizeLabel: local.sizeLabel,
+          };
+        })
+        .filter(Boolean);
+    }
+
     if (!assets.length) continue;
 
     const publishedAt = gh.published_at ?? new Date().toISOString();
