@@ -1,6 +1,6 @@
 # Deploy RAVEN AI landing page → GitHub Pages (RAVEN-AI-UI repo)
 # Pipeline: authorize → build → deploy
-# Author: Roberto de Souza — exclusive push rights for production
+# All pushes/commits: Roberto de Souza only (@rabbittrix via RAVEN_SYNC_TOKEN)
 
 name: Deploy Landing Page
 
@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: pages-deploy
@@ -68,6 +68,13 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify Roberto de Souza push token
+        env:
+          RAVEN_SYNC_TOKEN: ${{ secrets.RAVEN_SYNC_TOKEN }}
+        run: bash .github/scripts/verify-raven-sync-token.sh
+
       - name: Download build output
         uses: actions/download-artifact@v4
         with:
@@ -77,7 +84,7 @@ jobs:
       - name: Deploy to GitHub Pages (gh-pages branch)
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.RAVEN_SYNC_TOKEN || secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.RAVEN_SYNC_TOKEN }}
           publish_dir: dist
           publish_branch: gh-pages
           force_orphan: true
@@ -87,7 +94,7 @@ jobs:
 
       - name: Configure GitHub Pages source (gh-pages / root)
         env:
-          GH_TOKEN: ${{ secrets.RAVEN_SYNC_TOKEN || secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.RAVEN_SYNC_TOKEN }}
         run: |
           set -e
           configure() {

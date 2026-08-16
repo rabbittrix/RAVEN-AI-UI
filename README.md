@@ -89,8 +89,9 @@ RAVEN-AI (deploy-to-ui.yml via sync-landing-ui.yml)
   authorize → build → deploy (cross-repo sync needs RAVEN_SYNC_TOKEN on RAVEN-AI)
 ```
 
-**RAVEN_SYNC_TOKEN** (optional on RAVEN-AI-UI, required on RAVEN-AI for cross-repo sync):
+**RAVEN_SYNC_TOKEN** (required on both repos — must be a PAT owned by **rabbittrix** / Roberto de Souza):
 Fine-grained PAT with **Contents** + **Actions** read/write on both repos.
+All CI pushes use this token so commits appear as **Roberto de Souza only** (never `github-actions[bot]`).
 Add under **Settings → Secrets and variables → Actions → New repository secret**.
 
 ---
