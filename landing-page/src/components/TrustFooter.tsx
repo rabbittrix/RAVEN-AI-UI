@@ -1,9 +1,9 @@
-import { useGitHubReleases } from "@/hooks/useGitHubReleases";
+import { useReleaseStats } from "@/context/ReleaseStatsContext";
 import { useI18n } from "@/i18n/I18nProvider";
 
 export function TrustFooter() {
   const { t } = useI18n();
-  const stats = useGitHubReleases();
+  const stats = useReleaseStats();
   const hasStats =
     !stats.loading &&
     stats.releases.length > 0 &&
@@ -17,19 +17,17 @@ export function TrustFooter() {
             <p>{t.footerLoading}</p>
           </div>
         ) : hasStats ? (
-          <div className="glass rounded-2xl px-5 py-4 text-center font-mono text-[11px] leading-relaxed text-[color:var(--raven-muted)] md:text-xs">
-            <p>
-              <span className="text-[color:var(--raven-text)]">
-                {t.footerTotal}:
-              </span>{" "}
+          <div className="glass rounded-2xl px-5 py-4 text-center font-mono text-[11px] text-[color:var(--raven-muted)] md:text-xs">
+            <p className="leading-relaxed">
+              <span className="text-[color:var(--raven-text)]">{t.footerTotal}:</span>{" "}
               {stats.totalDownloads.toLocaleString()}
-            </p>
-            <p className="mt-1">
+              {" - "}
               v{stats.latestVersion} ({t.footerWin}):{" "}
-              {stats.winCount.toLocaleString()} | v{stats.latestVersion} (
-              {t.footerLinux}): {stats.linuxCount.toLocaleString()}
-            </p>
-            <p className="mt-1">
+              {stats.winCount.toLocaleString()}
+              {" | "}
+              v{stats.latestVersion} ({t.footerLinux}):{" "}
+              {stats.linuxCount.toLocaleString()}
+              {" - "}
               {t.footerLast}: {stats.lastReleaseDate}
             </p>
           </div>

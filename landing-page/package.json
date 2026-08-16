@@ -1,7 +1,7 @@
 {
   "name": "raven-ai-landing",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "RAVEN AI — Sovereign landing page (GitHub Pages)",
   "author": "Roberto de Souza <rabbittrix@hotmail.com>",
   "type": "module",

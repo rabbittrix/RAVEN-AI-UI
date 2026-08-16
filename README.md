@@ -48,9 +48,9 @@ Open the **Download** section on the live site. You will see every published ver
 
 | Platform | File pattern |
 | --- | --- |
-| Windows (setup) | `raven-ai-v1.0.0-setup.exe` |
-| Windows (enterprise MSI) | `raven-ai-v1.0.0.msi` |
-| Ubuntu (.deb) | `raven-ai-v1.0.0_amd64.deb` |
+| Windows (setup) | `raven-ai-v1.0.1-setup.exe` |
+| Windows (enterprise MSI) | `raven-ai-v1.0.1.msi` |
+| Ubuntu (.deb) | `raven-ai-v1.0.1_amd64.deb` |
 
 Installers are built and published from [rabbittrix/RAVEN-AI](https://github.com/rabbittrix/RAVEN-AI) on each release, then synced here automatically.
 

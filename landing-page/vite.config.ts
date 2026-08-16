@@ -3,7 +3,8 @@ import react from "@vitejs/plugin-react";
 import path from "node:path";
 
 const pagesBase =
-  process.env.GITHUB_PAGES === "true" ? "/RAVEN-AI-UI/" : "/";
+  process.env.PAGES_BASE ||
+  (process.env.GITHUB_PAGES === "true" ? "/RAVEN-AI-UI/" : "/");
 
 export default defineConfig({
   plugins: [react()],

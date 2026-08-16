@@ -38,14 +38,13 @@ npm run tauri:build:linux
 > PowerShell does not support `&&`. Use `;` or run commands separately:
 > `npm ci; npm run build`
 
-## Deployment pipeline (RAVEN-AI → RAVEN-AI-UI)
+## Deployment pipeline
 
 ```text
 RAVEN-AI push/release
   → Build installers (.exe, .msi, .deb) → GitHub Release (RAVEN-AI)
   → deploy-to-ui.yml (RAVEN_SYNC_TOKEN)
-  → Sync landing-page/ → RAVEN-AI-UI main
-  → deploy-landing.yml → gh-pages (live site + download links)
+  → gh-pages on RAVEN-AI-UI → https://rabbittrix.github.io/RAVEN-AI-UI/
 ```
 
 Installers live on [RAVEN-AI Releases](https://github.com/rabbittrix/RAVEN-AI/releases).  
@@ -59,24 +58,15 @@ The landing page fetches download counts/links via GitHub API.
 
 ## Deployment
 
-CI lives in `.github/workflows/deploy-landing.yml`. Only GitHub user **`rabbittrix`** may deploy.
+CI lives in `.github/workflows/deploy-to-ui.yml`. Only GitHub user **`rabbittrix`** may deploy.
 
-**Required secrets (Settings → Secrets → Actions):**
+No extra secrets are required. The workflow pushes `gh-pages` on **RAVEN-AI** with `GITHUB_TOKEN`.
 
-| Repo | Secret | Purpose |
-| --- | --- | --- |
-| **RAVEN-AI-UI** | `RAVEN_SYNC_TOKEN` | Push `gh-pages` + configure Pages API |
-| **RAVEN-AI** | `RAVEN_SYNC_TOKEN` | Mirror `landing-page/` to UI repo (optional; skips if unset) |
+Optional: add `RAVEN_SYNC_TOKEN` to also mirror [RAVEN-AI-UI](https://github.com/rabbittrix/RAVEN-AI-UI). See `.github/RAVEN_SYNC_TOKEN_SETUP.md`.
 
-PAT scopes: `repo`, `workflow`. Author on all CI commits: **Roberto de Souza** only.
-
-**GitHub Pages setup (automatic):** the workflow sets **Branch:** `gh-pages` / **/(root)** after each deploy.
-
-Manual fallback: [Settings → Pages](https://github.com/rabbittrix/RAVEN-AI-UI/settings/pages)
+**GitHub Pages:** **Settings → Pages → Branch:** `gh-pages` / **(root)** (the workflow tries to set this automatically).
 
 Download artifacts are fetched from: `https://github.com/rabbittrix/RAVEN-AI/releases`
-
-**Monorepo sync:** pushes to `landing-page/` in [RAVEN-AI](https://github.com/rabbittrix/RAVEN-AI) trigger `sync-landing-ui.yml` (uses the same `RAVEN_SYNC_TOKEN` secret on that repo).
 
 ## Note
 

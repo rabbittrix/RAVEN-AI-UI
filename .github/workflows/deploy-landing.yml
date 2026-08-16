@@ -1,5 +1,5 @@
-# Deploy RAVEN AI landing page → GitHub Pages (RAVEN-AI-UI)
-# authorize → build → deploy | No artifacts | GITHUB_TOKEN fallback when PAT missing
+# Deploy landing page to GitHub Pages on the current repo (GITHUB_TOKEN).
+# On RAVEN-AI, push deploys are handled by sync-landing-ui.yml.
 
 name: Deploy Landing Page
 
@@ -9,7 +9,17 @@ on:
     paths:
       - "landing-page/**"
       - ".github/workflows/deploy-landing.yml"
+      - ".github/scripts/prepare-gh-pages-bundle.sh"
+      - "scripts/stage-release-assets-for-pages.mjs"
+      - "scripts/generate-releases-json.mjs"
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Optional release tag to stage (e.g. v1.0.1)"
+        required: false
+        type: string
+  repository_dispatch:
+    types: [deploy-landing]
 
 permissions:
   contents: write
@@ -19,93 +29,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  authorize:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Verify exclusive author (rabbittrix only)
-        if: github.actor != 'rabbittrix'
-        run: |
-          echo "::error::Only Roberto de Souza (GitHub: rabbittrix) may deploy the production landing page."
-          exit 1
-
-  build:
-    needs: authorize
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: landing-page
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "24"
-          cache: npm
-          cache-dependency-path: landing-page/package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build static site (validate)
-        run: npm run build
-        env:
-          GITHUB_PAGES: "true"
-
   deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "24"
-          cache: npm
-          cache-dependency-path: landing-page/package-lock.json
-
-      - name: Resolve GitHub token
-        id: auth
-        env:
-          RAVEN_SYNC_TOKEN: ${{ secrets.RAVEN_SYNC_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: bash .github/scripts/resolve-github-token.sh prefer-roberto
-
-      - name: Generate releases manifest from /release folder
-        run: node scripts/generate-releases-json.mjs /RAVEN-AI-UI/
-
-      - name: Build static site for deploy
-        working-directory: landing-page
-        run: |
-          npm ci
-          npm run build
-        env:
-          GITHUB_PAGES: "true"
-
-      - name: Deploy to GitHub Pages (gh-pages branch)
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ steps.auth.outputs.token }}
-          publish_dir: landing-page/dist
-          publish_branch: gh-pages
-          force_orphan: true
-          user_name: Roberto de Souza
-          user_email: rabbittrix@hotmail.com
-          commit_message: "deploy: landing page v1.0.0 ${{ github.sha }}"
-
-      - name: Configure GitHub Pages source (gh-pages / root)
-        env:
-          GH_TOKEN: ${{ steps.auth.outputs.token }}
-        run: |
-          set -e
-          configure() {
-            gh api "repos/${{ github.repository }}/pages" \
-              -X PUT \
-              -f build_type=legacy \
-              -f "source[branch]=gh-pages" \
-              -f "source[path]=/"
-          }
-          configure || gh api "repos/${{ github.repository }}/pages" \
-            -X POST \
-            -f "source[branch]=gh-pages" \
-            -f "source[path]=/"
-          echo "GitHub Pages configured: gh-pages @ /"
+    if: github.event_name != 'push' || github.repository == 'rabbittrix/RAVEN-AI-UI'
+    uses: ./.github/workflows/deploy-to-ui.yml
+    secrets: inherit
+    permissions:
+      contents: write
+    with:
+      release_tag: ${{ github.event.inputs.release_tag || github.event.client_payload.release_tag || '' }}

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Scan landing-page/public/release/ and write releases.json for the landing site.
- * Usage: node scripts/generate-releases-json.mjs [baseUrl]
+ * Usage: node scripts/generate-releases-json.mjs
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -11,7 +11,17 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, "..");
 const releaseRoot = path.join(root, "landing-page", "public", "release");
 const outFile = path.join(root, "landing-page", "public", "releases.json");
-const baseUrl = (process.argv[2] || "/").replace(/\/?$/, "/");
+const statsFile = path.join(root, "landing-page", "public", "download-stats.json");
+
+function loadDownloadStats() {
+  if (!fs.existsSync(statsFile)) return {};
+  try {
+    const data = JSON.parse(fs.readFileSync(statsFile, "utf8"));
+    return data.assets && typeof data.assets === "object" ? data.assets : {};
+  } catch {
+    return {};
+  }
+}
 
 function formatBytes(bytes) {
   if (bytes < 1024) return `${bytes} B`;
@@ -28,6 +38,7 @@ function classify(name) {
 }
 
 const releases = [];
+const downloadStats = loadDownloadStats();
 
 if (fs.existsSync(releaseRoot)) {
   for (const tag of fs.readdirSync(releaseRoot).sort().reverse()) {
@@ -43,8 +54,8 @@ if (fs.existsSync(releaseRoot)) {
       if (!stat.isFile() || stat.size === 0) continue;
       assets.push({
         name,
-        url: `${baseUrl}release/${tag}/${name}`,
-        downloadCount: 0,
+        url: `release/${tag}/${name}`,
+        downloadCount: downloadStats[name] ?? 0,
         platform,
         sizeLabel: formatBytes(stat.size),
       });

@@ -5,9 +5,11 @@ import { Jurisdictions } from "@/components/Jurisdictions";
 import { Pillars } from "@/components/Pillars";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { TrustFooter } from "@/components/TrustFooter";
+import { ReleaseStatsProvider } from "@/context/ReleaseStatsContext";
 
 export function App() {
   return (
+    <ReleaseStatsProvider>
     <div className="bg-mesh min-h-screen">
       <header className="sticky top-0 z-50 border-b border-[color:var(--raven-line)] bg-[color:var(--raven-bg)]/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
@@ -49,5 +51,6 @@ export function App() {
 
       <TrustFooter />
     </div>
+    </ReleaseStatsProvider>
   );
 }

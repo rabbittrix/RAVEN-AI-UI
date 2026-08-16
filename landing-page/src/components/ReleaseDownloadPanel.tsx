@@ -1,8 +1,9 @@
 import { GlassCard } from "@/components/GlassCard";
+import { useReleaseStats } from "@/context/ReleaseStatsContext";
 import {
   platformLabel,
+  type PlatformKind,
   type ReleaseVersion,
-  useGitHubReleases,
 } from "@/hooks/useGitHubReleases";
 import { useI18n } from "@/i18n/I18nProvider";
 
@@ -10,15 +11,17 @@ function DownloadButton({
   href,
   label,
   primary = false,
+  onDownload,
 }: {
   href: string;
   label: string;
   primary?: boolean;
+  onDownload?: () => void;
 }) {
   return (
     <a
       href={href}
-      download
+      onClick={() => onDownload?.()}
       className={
         primary
           ? "inline-flex min-w-[12rem] items-center justify-center rounded-xl bg-gradient-to-r from-neon-dim to-neon px-6 py-3.5 font-display text-xs uppercase tracking-[0.18em] text-white shadow-neon transition hover:scale-[1.01] hover:brightness-110"
@@ -30,7 +33,13 @@ function DownloadButton({
   );
 }
 
-function VersionRow({ release }: { release: ReleaseVersion }) {
+function VersionRow({
+  release,
+  onDownload,
+}: {
+  release: ReleaseVersion;
+  onDownload: (assetName: string, platform: PlatformKind) => void;
+}) {
   const { t } = useI18n();
 
   return (
@@ -48,7 +57,7 @@ function VersionRow({ release }: { release: ReleaseVersion }) {
           <li key={asset.url}>
             <a
               href={asset.url}
-              download={asset.name}
+              onClick={() => onDownload(asset.name, asset.platform)}
               className="group flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between"
             >
               <span className="font-mono text-[11px] text-[color:var(--raven-text)] group-hover:text-neon">
@@ -71,9 +80,18 @@ function VersionRow({ release }: { release: ReleaseVersion }) {
 
 export function ReleaseDownloadPanel() {
   const { t } = useI18n();
-  const releases = useGitHubReleases();
+  const releases = useReleaseStats();
   const latest = releases.releases[0];
   const hasInstallers = releases.releases.length > 0;
+
+  const track = (assetName: string, _platform: PlatformKind) => {
+    void _platform;
+    releases.recordDownload(assetName);
+  };
+
+  const winAsset = latest?.assets.find((a) => a.platform === "windows-exe");
+  const linuxAsset = latest?.assets.find((a) => a.platform === "linux-deb");
+  const msiAsset = latest?.assets.find((a) => a.platform === "windows-msi");
 
   return (
     <section id="download" className="px-6 py-16">
@@ -98,16 +116,27 @@ export function ReleaseDownloadPanel() {
                     href={releases.winUrl}
                     label={t.winLabel}
                     primary
+                    onDownload={() => {
+                      if (winAsset) track(winAsset.name, winAsset.platform);
+                    }}
                   />
                 ) : null}
                 {releases.linuxUrl ? (
-                  <DownloadButton href={releases.linuxUrl} label={t.linuxLabel} />
+                  <DownloadButton
+                    href={releases.linuxUrl}
+                    label={t.linuxLabel}
+                    onDownload={() => {
+                      if (linuxAsset) track(linuxAsset.name, linuxAsset.platform);
+                    }}
+                  />
                 ) : null}
               </div>
               {releases.msiUrl ? (
                 <a
                   href={releases.msiUrl}
-                  download
+                  onClick={() => {
+                    if (msiAsset) track(msiAsset.name, msiAsset.platform);
+                  }}
                   className="mt-4 inline-block font-mono text-[11px] text-neon underline underline-offset-4 hover:brightness-110"
                 >
                   {t.winMsi} (v{latest.version}) →
@@ -120,12 +149,12 @@ export function ReleaseDownloadPanel() {
                     {t.downloadPickVersion}
                   </p>
                   {releases.releases.map((rel) => (
-                    <VersionRow key={rel.tag} release={rel} />
+                    <VersionRow key={rel.tag} release={rel} onDownload={track} />
                   ))}
                 </div>
               ) : (
                 <div className="mt-8 text-left">
-                  <VersionRow release={latest} />
+                  <VersionRow release={latest} onDownload={track} />
                 </div>
               )}
             </>

@@ -112,7 +112,12 @@ function mapAssets(raw: GhAsset[]): ReleaseAsset[] {
 function resolveAssetUrl(url: string): string {
   if (/^https?:\/\//i.test(url)) return url;
   const base = import.meta.env.BASE_URL || "/";
-  return `${base}${url.replace(/^\//, "")}`;
+  let path = url.replace(/^\//, "");
+  const baseTrim = base.replace(/^\//, "").replace(/\/$/, "");
+  if (baseTrim && path.startsWith(`${baseTrim}/`)) {
+    path = path.slice(baseTrim.length + 1);
+  }
+  return `${base}${path}`;
 }
 
 function normalizeVersions(versions: ReleaseVersion[]): ReleaseVersion[] {
