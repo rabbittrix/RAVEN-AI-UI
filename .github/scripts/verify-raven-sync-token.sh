@@ -5,7 +5,8 @@ set -euo pipefail
 
 if [ -z "${RAVEN_SYNC_TOKEN:-}" ]; then
   echo "::error::RAVEN_SYNC_TOKEN is required for pushes attributed to Roberto de Souza."
-  echo "Create a fine-grained PAT on the **rabbittrix** account and add it under Settings → Secrets → Actions."
+  echo "See .github/RAVEN_SYNC_TOKEN_SETUP.md — add a fine-grained PAT on the **rabbittrix** account:"
+  echo "  https://github.com/rabbittrix/RAVEN-AI/settings/secrets/actions"
   exit 1
 fi
 

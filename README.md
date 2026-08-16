@@ -71,7 +71,14 @@ See [`landing-page/README.md`](landing-page/README.md) for local development.
 
 **Settings → Pages → Branch:** `gh-pages` / **(root)**
 
-Deployments are pushed by [peaceiris/actions-gh-pages](https://github.com/peaceiris/actions-gh-pages) — no Actions artifact storage quota required.
+Deployments are pushed by [peaceiris/actions-gh-pages](https://github.com/peaceiris/actions-gh-pages) from **RAVEN-AI** (cross-repo). Commits authored as **Roberto de Souza** only.
+
+### One-time: add `RAVEN_SYNC_TOKEN`
+
+The deploy step fails until you add Roberto de Souza's PAT on **RAVEN-AI**:
+
+→ **[Setup guide](https://github.com/rabbittrix/RAVEN-AI/blob/main/.github/RAVEN_SYNC_TOKEN_SETUP.md)**  
+→ **[Add secret now](https://github.com/rabbittrix/RAVEN-AI/settings/secrets/actions)**
 
 ---
 
