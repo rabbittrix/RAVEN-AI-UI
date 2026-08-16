@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-08-16T21:58:59.273Z",
-  "source": "release-folder",
+  "generatedAt": "2026-08-16T23:15:07.275Z",
+  "source": "release-folder+github-api",
   "releases": [
     {
       "tag": "v1.0.1",
       "version": "1.0.1",
-      "publishedAt": "2026-08-16T21:33:21.589Z",
+      "publishedAt": "2026-08-16T22:24:50Z",
       "publishedLabel": "Aug 16, 2026",
       "assets": [
         {
