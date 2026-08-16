@@ -207,13 +207,12 @@ function mergeReleases(folderReleases, apiReleases, downloadStats) {
           const platform = classify(name);
           if (!platform) return null;
           const local = localAsset(tag, name);
-          if (!local) return null;
           return {
             name,
-            url: local.url,
+            url: local?.url ?? `release/${tag}/${name}`,
             downloadCount: downloadStats[name] ?? 0,
             platform,
-            sizeLabel: local.sizeLabel,
+            sizeLabel: local?.sizeLabel ?? "Pending",
           };
         })
         .filter(Boolean);
