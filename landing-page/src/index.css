@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root,
+:root[data-theme="dark"] {
+  --raven-bg: #0b0b10;
+  --raven-text: #f4f1ea;
+  --raven-muted: #9a96a8;
+  --raven-accent: #a855f7;
+  --raven-line: rgba(168, 85, 247, 0.18);
+  --raven-card: rgba(18, 18, 26, 0.72);
+  --raven-glass: rgba(12, 12, 18, 0.55);
+}
+
+:root[data-theme="light"] {
+  --raven-bg: #faf9f7;
+  --raven-text: #14121a;
+  --raven-muted: #6b6575;
+  --raven-accent: #7c3aed;
+  --raven-line: rgba(124, 58, 237, 0.15);
+  --raven-card: rgba(255, 255, 255, 0.82);
+  --raven-glass: rgba(255, 255, 255, 0.65);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--raven-bg);
+  color: var(--raven-text);
+  font-family: Outfit, ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.bg-mesh {
+  background-color: var(--raven-bg);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(168, 85, 247, 0.22), transparent),
+    radial-gradient(ellipse 60% 40% at 100% 50%, rgba(124, 58, 237, 0.12), transparent),
+    radial-gradient(ellipse 50% 30% at 0% 80%, rgba(232, 121, 249, 0.08), transparent);
+}
+
+.glass {
+  background: var(--raven-glass);
+  border: 1px solid var(--raven-line);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.glass-card {
+  @apply glass rounded-2xl shadow-glass;
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #e879f9 0%, #a855f7 45%, #c4b5fd 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+::selection {
+  background: rgba(168, 85, 247, 0.35);
+}

@@ -1,0 +1,28 @@
+{
+  "name": "raven-ai-landing",
+  "private": true,
+  "version": "1.0.0",
+  "description": "RAVEN AI — Sovereign landing page (GitHub Pages)",
+  "author": "Roberto de Souza <rabbittrix@hotmail.com>",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "framer-motion": "^12.23.12",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.9",
+    "@types/react-dom": "^19.1.7",
+    "@vitejs/plugin-react": "^4.7.0",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17",
+    "typescript": "~5.8.3",
+    "vite": "^6.3.5"
+  }
+}
