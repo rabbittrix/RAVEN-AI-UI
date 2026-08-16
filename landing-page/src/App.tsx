@@ -19,8 +19,8 @@ export function App() {
               width={32}
               height={32}
             />
-            <span className="font-display text-sm font-bold tracking-[0.2em]">
-              RAVEN
+            <span className="font-display text-sm font-bold tracking-[0.16em]">
+              RAVEN AI
             </span>
           </a>
           <nav className="flex items-center gap-3">
