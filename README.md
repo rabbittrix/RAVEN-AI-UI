@@ -71,7 +71,7 @@ See [`landing-page/README.md`](landing-page/README.md) for local development.
 
 **Settings → Pages → Branch:** `gh-pages` / **(root)**
 
-Deployments are pushed by [peaceiris/actions-gh-pages](https://github.com/peaceiris/actions-gh-pages) from **RAVEN-AI** (cross-repo). Commits authored as **Roberto de Souza** only.
+Deployments are pushed by [peaceiris/actions-gh-pages](https://github.com/peaceiris/actions-gh-pages) from **RAVEN-AI** (cross-repo). No Actions artifact storage is used.
 
 ### One-time: add `RAVEN_SYNC_TOKEN`
 

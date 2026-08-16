@@ -1,13 +1,18 @@
-# Deploy RAVEN AI landing page → GitHub Pages (manual fallback on RAVEN-AI-UI)
-# No Actions artifacts — avoids storage quota limits
+# Deploy RAVEN AI landing page → GitHub Pages (RAVEN-AI-UI)
+# authorize → build → deploy | No artifacts | GITHUB_TOKEN fallback when PAT missing
 
 name: Deploy Landing Page
 
 on:
+  push:
+    branches: [main, master]
+    paths:
+      - "landing-page/**"
+      - ".github/workflows/deploy-landing.yml"
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: pages-deploy
@@ -58,10 +63,12 @@ jobs:
           cache: npm
           cache-dependency-path: landing-page/package-lock.json
 
-      - name: Verify Roberto de Souza push token
+      - name: Resolve GitHub token
+        id: auth
         env:
           RAVEN_SYNC_TOKEN: ${{ secrets.RAVEN_SYNC_TOKEN }}
-        run: bash .github/scripts/verify-raven-sync-token.sh
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash .github/scripts/resolve-github-token.sh prefer-roberto
 
       - name: Build static site for deploy
         working-directory: landing-page
@@ -74,17 +81,17 @@ jobs:
       - name: Deploy to GitHub Pages (gh-pages branch)
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.RAVEN_SYNC_TOKEN }}
+          github_token: ${{ steps.auth.outputs.token }}
           publish_dir: landing-page/dist
           publish_branch: gh-pages
           force_orphan: true
           user_name: Roberto de Souza
           user_email: rabbittrix@hotmail.com
-          commit_message: "deploy: landing page ${{ github.sha }}"
+          commit_message: "deploy: landing page v1.0.0 ${{ github.sha }}"
 
       - name: Configure GitHub Pages source (gh-pages / root)
         env:
-          GH_TOKEN: ${{ secrets.RAVEN_SYNC_TOKEN }}
+          GH_TOKEN: ${{ steps.auth.outputs.token }}
         run: |
           set -e
           configure() {
