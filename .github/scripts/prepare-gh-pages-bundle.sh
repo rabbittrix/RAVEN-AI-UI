@@ -7,28 +7,10 @@ cd "$ROOT"
 
 BUNDLE="${GH_PAGES_BUNDLE:-gh-pages-bundle}"
 RELEASES_REPO="${RELEASES_REPO:-rabbittrix/RAVEN-AI}"
-UI_REPO="${GH_PAGES_REPO:-rabbittrix/RAVEN-AI-UI}"
 TAG="${RELEASE_TAG:-}"
 TOKEN="${GH_TOKEN:-${RAVEN_SYNC_TOKEN:-${GITHUB_TOKEN:-}}}"
 
 mkdir -p landing-page/public/release
-
-echo "=== Preserve gh-pages state from ${UI_REPO} ==="
-if [ -n "$TOKEN" ]; then
-  rm -rf .ui-pages-cache
-  git clone --depth 1 --branch gh-pages --single-branch \
-    "https://x-access-token:${TOKEN}@github.com/${UI_REPO}.git" \
-    .ui-pages-cache 2>/dev/null || true
-  if [ -d .ui-pages-cache/release ]; then
-    rsync -a .ui-pages-cache/release/ landing-page/public/release/
-    echo "Kept existing gh-pages installers"
-  fi
-  if [ -f .ui-pages-cache/download-stats.json ]; then
-    cp .ui-pages-cache/download-stats.json landing-page/public/download-stats.json
-    echo "Kept existing download-stats.json"
-  fi
-  rm -rf .ui-pages-cache
-fi
 
 echo "=== Stage release installers from ${RELEASES_REPO} ==="
 if [ -n "$TAG" ]; then

@@ -99,6 +99,7 @@ function buildAssetsForTag(tag, ghAssets, downloadStats) {
     const platform = classify(gh.name);
     if (!platform) continue;
     const local = localAsset(tag, gh.name);
+    if (process.env.GITHUB_PAGES === "true" && !local) continue;
     byName.set(gh.name, {
       name: gh.name,
       url: local?.url ?? gh.browser_download_url,
@@ -200,23 +201,6 @@ function mergeReleases(folderReleases, apiReleases, downloadStats) {
     const tag = gh.tag_name;
     if (!tag) continue;
     let assets = buildAssetsForTag(tag, gh.assets ?? [], downloadStats);
-
-    if (!assets.length) {
-      assets = expectedInstallerNames(tag)
-        .map((name) => {
-          const platform = classify(name);
-          if (!platform) return null;
-          const local = localAsset(tag, name);
-          return {
-            name,
-            url: local?.url ?? `release/${tag}/${name}`,
-            downloadCount: downloadStats[name] ?? 0,
-            platform,
-            sizeLabel: local?.sizeLabel ?? "Pending",
-          };
-        })
-        .filter(Boolean);
-    }
 
     if (!assets.length) continue;
 
