@@ -1,0 +1,2 @@
+# Versioned installers served from GitHub Pages (/release/vX.Y.Z/)
+# Binaries are published to gh-pages — not committed to this repo (see .gitignore).

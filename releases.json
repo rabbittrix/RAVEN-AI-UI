@@ -1,0 +1,64 @@
+{
+  "generatedAt": "2026-08-17T20:16:12.740Z",
+  "source": "release-folder+github-api",
+  "releases": [
+    {
+      "tag": "v1.0.3",
+      "version": "1.0.3",
+      "publishedAt": "2026-08-17T18:37:56Z",
+      "publishedLabel": "Aug 17, 2026",
+      "assets": [
+        {
+          "name": "raven-ai-v1.0.3-setup.exe",
+          "url": "release/v1.0.3/raven-ai-v1.0.3-setup.exe",
+          "downloadCount": 1,
+          "platform": "windows-exe",
+          "sizeLabel": "12.7 MB"
+        },
+        {
+          "name": "raven-ai-v1.0.3.msi",
+          "url": "release/v1.0.3/raven-ai-v1.0.3.msi",
+          "downloadCount": 1,
+          "platform": "windows-msi",
+          "sizeLabel": "18.1 MB"
+        },
+        {
+          "name": "raven-ai-v1.0.3_amd64.deb",
+          "url": "release/v1.0.3/raven-ai-v1.0.3_amd64.deb",
+          "downloadCount": 2,
+          "platform": "linux-deb",
+          "sizeLabel": "20.0 MB"
+        }
+      ]
+    },
+    {
+      "tag": "v1.0.1",
+      "version": "1.0.1",
+      "publishedAt": "2026-08-16T22:24:50Z",
+      "publishedLabel": "Aug 16, 2026",
+      "assets": [
+        {
+          "name": "raven-ai-v1.0.1-setup.exe",
+          "url": "release/v1.0.1/raven-ai-v1.0.1-setup.exe",
+          "downloadCount": 6,
+          "platform": "windows-exe",
+          "sizeLabel": "12.7 MB"
+        },
+        {
+          "name": "raven-ai-v1.0.1.msi",
+          "url": "release/v1.0.1/raven-ai-v1.0.1.msi",
+          "downloadCount": 6,
+          "platform": "windows-msi",
+          "sizeLabel": "18.1 MB"
+        },
+        {
+          "name": "raven-ai-v1.0.1_amd64.deb",
+          "url": "release/v1.0.1/raven-ai-v1.0.1_amd64.deb",
+          "downloadCount": 5,
+          "platform": "linux-deb",
+          "sizeLabel": "20.0 MB"
+        }
+      ]
+    }
+  ]
+}
