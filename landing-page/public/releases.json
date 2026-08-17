@@ -21,6 +21,13 @@
           "downloadCount": 0,
           "platform": "windows-msi",
           "sizeLabel": "18.2 MB"
+        },
+        {
+          "name": "raven-ai-v1.0.1_amd64.deb",
+          "url": "release/v1.0.1/raven-ai-v1.0.1_amd64.deb",
+          "downloadCount": 0,
+          "platform": "linux-deb",
+          "sizeLabel": "20.0 MB"
         }
       ]
     },

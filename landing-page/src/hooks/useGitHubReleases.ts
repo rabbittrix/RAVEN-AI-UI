@@ -232,6 +232,36 @@ async function loadFromGitHubApi(): Promise<Omit<ReleaseStats, "loading" | "erro
   return parseGhReleases(data);
 }
 
+async function enrichMissingInstallers(
+  manifest: Omit<ReleaseStats, "loading" | "error">,
+): Promise<Omit<ReleaseStats, "loading" | "error">> {
+  const latest = manifest.releases[0];
+  if (!latest) return manifest;
+
+  const hasDeb = latest.assets.some((a) => a.platform === "linux-deb");
+  const hasExe = latest.assets.some((a) => a.platform === "windows-exe");
+  const hasMsi = latest.assets.some((a) => a.platform === "windows-msi");
+  if (hasDeb && hasExe && hasMsi) return manifest;
+
+  const api = await loadFromGitHubApi();
+  if (!api?.releases.length) return manifest;
+
+  const apiLatest =
+    api.releases.find((r) => r.tag === latest.tag) ?? api.releases[0];
+  if (!apiLatest) return manifest;
+
+  const mergedAssets = [...latest.assets];
+  for (const asset of apiLatest.assets) {
+    if (mergedAssets.some((a) => a.name === asset.name)) continue;
+    mergedAssets.push(asset);
+  }
+  mergedAssets.sort((a, b) => assetSortKey(a.platform) - assetSortKey(b.platform));
+
+  const releases = [...manifest.releases];
+  releases[0] = { ...latest, assets: mergedAssets };
+  return statsFromVersions(releases);
+}
+
 export function useGitHubReleases(): ReleaseStats {
   const [stats, setStats] = useState<ReleaseStats>(EMPTY);
 
@@ -243,7 +273,9 @@ export function useGitHubReleases(): ReleaseStats {
         const manifest = await loadManifest();
         if (!alive) return;
         if (manifest) {
-          setStats({ ...manifest, loading: false, error: null });
+          const enriched = await enrichMissingInstallers(manifest);
+          if (!alive) return;
+          setStats({ ...enriched, loading: false, error: null });
           return;
         }
 

@@ -142,6 +142,17 @@ export function ReleaseDownloadPanel() {
                   {t.winMsi} (v{latest.version}) →
                 </a>
               ) : null}
+              {releases.linuxUrl ? (
+                <a
+                  href={releases.linuxUrl}
+                  onClick={() => {
+                    if (linuxAsset) track(linuxAsset.name, linuxAsset.platform);
+                  }}
+                  className="mt-2 inline-block font-mono text-[11px] text-neon underline underline-offset-4 hover:brightness-110"
+                >
+                  {t.linuxDeb} (v{latest.version}) →
+                </a>
+              ) : null}
 
               {releases.releases.length > 1 ? (
                 <div className="mt-10 space-y-4 text-left">

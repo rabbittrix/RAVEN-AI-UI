@@ -99,7 +99,9 @@ function buildAssetsForTag(tag, ghAssets, downloadStats) {
     const platform = classify(gh.name);
     if (!platform) continue;
     const local = localAsset(tag, gh.name);
-    if (process.env.GITHUB_PAGES === "true" && !local) continue;
+    // Always list GitHub Release installers (.exe, .msi, .deb). Prefer staged
+    // gh-pages paths when present; fall back to browser_download_url so Linux
+    // stays visible even before the .deb is copied to Pages.
     byName.set(gh.name, {
       name: gh.name,
       url: local?.url ?? gh.browser_download_url,
