@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-17T21:48:42.515Z",
+  "generatedAt": "2026-08-17T22:24:26.587Z",
   "source": "release-folder+github-api",
   "releases": [
     {
@@ -39,22 +39,22 @@
       "assets": [
         {
           "name": "raven-ai-v1.0.3-setup.exe",
-          "url": "https://github.com/rabbittrix/RAVEN-AI/releases/download/v1.0.3/raven-ai-v1.0.3-setup.exe",
-          "downloadCount": 2,
+          "url": "release/v1.0.3/raven-ai-v1.0.3-setup.exe",
+          "downloadCount": 3,
           "platform": "windows-exe",
           "sizeLabel": "12.7 MB"
         },
         {
           "name": "raven-ai-v1.0.3.msi",
-          "url": "https://github.com/rabbittrix/RAVEN-AI/releases/download/v1.0.3/raven-ai-v1.0.3.msi",
-          "downloadCount": 2,
+          "url": "release/v1.0.3/raven-ai-v1.0.3.msi",
+          "downloadCount": 3,
           "platform": "windows-msi",
           "sizeLabel": "18.1 MB"
         },
         {
           "name": "raven-ai-v1.0.3_amd64.deb",
-          "url": "https://github.com/rabbittrix/RAVEN-AI/releases/download/v1.0.3/raven-ai-v1.0.3_amd64.deb",
-          "downloadCount": 3,
+          "url": "release/v1.0.3/raven-ai-v1.0.3_amd64.deb",
+          "downloadCount": 4,
           "platform": "linux-deb",
           "sizeLabel": "20.0 MB"
         }
@@ -82,8 +82,8 @@
         },
         {
           "name": "raven-ai-v1.0.1_amd64.deb",
-          "url": "https://github.com/rabbittrix/RAVEN-AI/releases/download/v1.0.1/raven-ai-v1.0.1_amd64.deb",
-          "downloadCount": 6,
+          "url": "release/v1.0.1/raven-ai-v1.0.1_amd64.deb",
+          "downloadCount": 7,
           "platform": "linux-deb",
           "sizeLabel": "20.0 MB"
         }
