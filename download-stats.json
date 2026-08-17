@@ -1,14 +1,17 @@
 {
-  "updatedAt": "2026-08-17T20:16:12.739Z",
+  "updatedAt": "2026-08-17T21:35:42.799Z",
   "assets": {
-    "raven-ai-v1.0.1-setup.exe": 6,
-    "raven-ai-v1.0.1.msi": 6,
-    "raven-ai-v1.0.1_amd64.deb": 5,
+    "raven-ai-v1.0.1-setup.exe": 7,
+    "raven-ai-v1.0.1.msi": 7,
+    "raven-ai-v1.0.1_amd64.deb": 6,
     "raven-ai-v1.0.0-setup.exe": 0,
     "raven-ai-v1.0.0.msi": 0,
     "raven-ai-v1.0.0_amd64.deb": 0,
-    "raven-ai-v1.0.3-setup.exe": 1,
-    "raven-ai-v1.0.3.msi": 1,
-    "raven-ai-v1.0.3_amd64.deb": 2
+    "raven-ai-v1.0.3-setup.exe": 2,
+    "raven-ai-v1.0.3.msi": 2,
+    "raven-ai-v1.0.3_amd64.deb": 3,
+    "raven-ai-v1.0.4-setup.exe": 1,
+    "raven-ai-v1.0.4.msi": 1,
+    "raven-ai-v1.0.4_amd64.deb": 1
   }
 }
